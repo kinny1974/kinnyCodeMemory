@@ -98,25 +98,25 @@ async def proxy_request(
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     """Home page - Dashboard."""
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse(request, "dashboard.html")
 
 
 @app.get("/projects", response_class=HTMLResponse)
 async def projects_page(request: Request):
     """Projects management page."""
-    return templates.TemplateResponse("projects.html", {"request": request})
+    return templates.TemplateResponse(request, "projects.html")
 
 
 @app.get("/search", response_class=HTMLResponse)
 async def search_page(request: Request):
     """Search page."""
-    return templates.TemplateResponse("search.html", {"request": request})
+    return templates.TemplateResponse(request, "search.html")
 
 
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request):
     """Settings page."""
-    return templates.TemplateResponse("settings.html", {"request": request})
+    return templates.TemplateResponse(request, "settings.html")
 
 
 # ═══════════════════════════════════════════════════════════════════════
