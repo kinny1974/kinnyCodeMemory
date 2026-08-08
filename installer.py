@@ -44,6 +44,40 @@ CONFIG_FILE = ".env"
 SOURCE_DIR = Path(__file__).parent
 
 PLATFORM = platform.system().lower()  # 'windows', 'linux', 'darwin'
+FROZEN = getattr(sys, 'frozen', False)
+
+
+# ═══════════════════════════════════════════════════════════════════════
+#  Helpers for PyInstaller frozen mode
+# ═══════════════════════════════════════════════════════════════════════
+
+
+def _get_source_dir() -> Path:
+    """Return the directory containing source files.
+
+    When running from PyInstaller --onefile, ``__file__`` points to the
+    temporary extraction folder which does NOT contain the project sources.
+    In that case we fall back to the directory that holds the executable
+    itself (i.e. where the user extracted the ZIP).
+    """
+    if FROZEN:
+        return Path(sys.executable).parent
+    return SOURCE_DIR
+
+
+def _find_python3() -> str:
+    """Find a usable ``python3`` (or ``python``) interpreter.
+
+    PyInstaller bundles its own interpreter via ``sys.executable`` but that
+    binary **cannot** be used to create virtual-environments.  We therefore
+    search for a system Python on ``PATH``.
+    """
+    for name in ("python3", "python"):
+        path = shutil.which(name)
+        if path:
+            return path
+    # Last resort – hope sys.executable is real Python (native script mode)
+    return sys.executable
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -210,6 +244,7 @@ class KinnyCodeInstaller:
     def copy_files(self, target_dir: str) -> bool:
         """Copy application files to target directory."""
         target = Path(target_dir)
+        source = _get_source_dir()
 
         # Files and directories to copy
         items_to_copy = [
@@ -225,7 +260,7 @@ class KinnyCodeInstaller:
         ]
 
         for item in items_to_copy:
-            src = SOURCE_DIR / item
+            src = source / item
             dst = target / item
 
             if src.is_dir():
@@ -249,9 +284,10 @@ class KinnyCodeInstaller:
 
         self._report("Creando entorno virtual...", 30)
 
-        # Create venv
+        # Create venv — use system Python, NOT sys.executable from PyInstaller
+        python3 = _find_python3()
         subprocess.run(
-            [sys.executable, "-m", "venv", str(venv_path)],
+            [python3, "-m", "venv", str(venv_path)],
             check=True, capture_output=True
         )
 
