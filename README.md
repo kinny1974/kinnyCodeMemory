@@ -25,7 +25,7 @@ Sistema de memoria multicapa con RAG (Retrieval-Augmented Generation) para asist
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/kinnycodememory.git
+git clone https://github.com/kinny1974/kinnycodememory.git
 cd kinnycodememory
 
 # Crear entorno virtual
@@ -108,9 +108,9 @@ git push origin v1.0.0
 
 | Plataforma | Archivo | Descripción |
 |------------|---------|-------------|
-| 🪟 Windows | [KinnyCodeMemory-Windows-x64.zip](https://github.com/tu-usuario/kinnycodememory/releases/latest) | Ejecutables standalone |
-| 🐧 Linux | [KinnyCodeMemory-Linux-x64.zip](https://github.com/tu-usuario/kinnycodememory/releases/latest) | Ejecutables standalone |
-| 📦 Source | [KinnyCodeMemory-Source.tar.gz](https://github.com/tu-usuario/kinnycodememory/releases/latest) | Código fuente |
+| 🪟 Windows | [KinnyCodeMemory-Windows-x64.zip](https://github.com/kinny1974/kinnycodememory/releases/latest) | Ejecutables standalone |
+| 🐧 Linux | [KinnyCodeMemory-Linux-x64.zip](https://github.com/kinny1974/kinnycodememory/releases/latest) | Ejecutables standalone |
+| 📦 Source | [KinnyCodeMemory-Source.tar.gz](https://github.com/kinny1974/kinnycodememory/releases/latest) | Código fuente |
 
 ---
 
@@ -296,8 +296,8 @@ Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles.
 ## 🔗 Enlaces
 
 - [Documentación API](http://localhost:8007/docs)
-- [Problemas](https://github.com/tu-usuario/kinnycodememory/issues)
-- [Pull Requests](https://github.com/tu-usuario/kinnycodememory/pulls)
+- [Problemas](https://github.com/kinny1974/kinnycodememory/issues)
+- [Pull Requests](https://github.com/kinny1974/kinnycodememory/pulls)
 
 ## ⭐ Soerte
 

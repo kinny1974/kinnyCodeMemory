@@ -21,7 +21,7 @@
 
 ```bash
 # Clonar tu fork
-git clone https://github.com/tu-usuario/kinnycodememory.git
+git clone https://github.com/kinny1974/kinnycodememory.git
 cd kinnycodememory
 
 # Crear entorno virtual
