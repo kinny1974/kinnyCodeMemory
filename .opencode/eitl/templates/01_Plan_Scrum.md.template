@@ -1,0 +1,22 @@
+# 01_Plan_Scrum.md
+## Informacion General
+- **Proyecto**: {{PROJECT_NAME}}
+- **Fecha**: {{DATE}}
+- **Product Owner**: ProductOwner-Agent
+- **Trace ID Base**: {{TRACE_ID}}
+
+## Product Backlog
+<!-- Las historias se generaran automaticamente -->
+
+## Sprints Propuestos
+<!-- Los sprints se generaran automaticamente -->
+
+## Definition of Done (Global)
+1. Criterios de aceptacion verificables y verificados
+2. Trazabilidad completa: Requisito -> Componente -> Test
+3. Sin deuda tecnica critica
+4. Aprobado por Validator-Agent (Gate 1)
+
+---
+**Ruta de generacion**: `../eitl-artifacts/01_Plan_Scrum.md`
+**NO escribir en**: `.opencode/eitl/artifacts/`

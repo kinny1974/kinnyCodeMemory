@@ -1,0 +1,117 @@
+# ═══════════════════════════════════════════════════════════════════
+#  KinnyCode Memory - .gitignore
+# ═══════════════════════════════════════════════════════════════════
+
+# ── Python ─────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+eggs/
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ── Virtual Environment ───────────────────────────────────────────
+.venv/
+venv/
+ENV/
+env/
+.python-version
+
+# ── IDE ───────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+project.properties
+
+# ── Environment Variables ─────────────────────────────────────────
+.env
+.env.local
+.env.production
+*.env
+
+# ── LanceDB Data ──────────────────────────────────────────────────
+lancedb_memory_db/
+*.lance
+lancedb/
+
+# ── SQLite ────────────────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+
+# ── Logs ──────────────────────────────────────────────────────────
+*.log
+logs/
+log/
+
+# ── Temp Files ────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+._*
+
+# ── Uploads ───────────────────────────────────────────────────────
+uploads/
+temp/
+tmp/
+
+# ── Build Artifacts ───────────────────────────────────────────────
+*.exe
+*.app
+*.AppImage
+*.deb
+*.rpm
+*.msi
+*.dmg
+
+# ── PyInstaller ───────────────────────────────────────────────────
+*.spec
+*.manifest
+
+# ── Testing ───────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+.tox/
+
+# ── Jupyter ───────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── macOS ─────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ── Windows ───────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ── Linux ─────────────────────────────────────────────────────────
+*~
+.fuse_hidden*
+.Trash-*
+.nfs*
+
+# ── KinnyCode Specific ───────────────────────────────────────────
+kinnycode_memory_db/
+mscore_state.json
+*.state.json

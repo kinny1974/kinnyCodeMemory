@@ -1,0 +1,23 @@
+# 03_Plan_TDD.md
+## Informacion General
+- **Proyecto**: {{PROJECT_NAME}}
+- **Fecha**: {{DATE}}
+- **Ingeniero**: TDDEngineer-Agent
+- **Trace ID Base**: {{TRACE_ID}}
+
+## 1. Estrategia de Testing
+## 2. Casos de Prueba Unitarios
+## 3. Casos de Prueba de Integracion
+## 4. Casos de Prueba de Aceptacion
+## 5. Test Fixtures y Factories
+## 6. Pipeline CI/CD para Tests
+
+---
+**Ruta de generacion**: `../eitl-artifacts/03_Plan_TDD.md`
+**NO escribir en**: `.opencode/eitl/artifacts/`
+
+## Nota sobre paginacion
+Si el plan TDD excede 3000 tokens de salida, dividir por componente:
+- `03_Plan_TDD_ComponenteA.md`
+- `03_Plan_TDD_ComponenteB.md`
+- etc.

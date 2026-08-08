@@ -1,0 +1,20 @@
+# 02_Arquitectura_SDD.md
+## Informacion General
+- **Proyecto**: {{PROJECT_NAME}}
+- **Fecha**: {{DATE}}
+- **Arquitecto**: SoftwareArchitect-Agent
+- **Trace ID Base**: {{TRACE_ID}}
+
+## 1. Vision General del Sistema
+## 2. Modelo de Datos
+## 3. Arquitectura del Sistema
+## 4. Flujos de Usuario
+## 5. API Contracts
+## 6. Architecture Decision Records (ADRs)
+## 7. Matriz de Trazabilidad
+## 8. Requisitos No Funcionales
+## 9. Riesgos Tecnicos
+
+---
+**Ruta de generacion**: `../eitl-artifacts/02_Arquitectura_SDD.md`
+**NO escribir en**: `.opencode/eitl/artifacts/`

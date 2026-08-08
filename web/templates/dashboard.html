@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KinnyCode Memory - Dashboard</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 15px 0;
+        }
+        header h1 { color: #38bdf8; font-size: 1.5rem; }
+        
+        /* Navigation */
+        nav {
+            display: flex;
+            gap: 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        nav a:hover, nav a.active {
+            background: #334155;
+            color: #38bdf8;
+        }
+        
+        /* Cards */
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            color: #f1f5f9;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .stat-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* Status Indicator */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .status.running { background: #064e3b; color: #34d399; }
+        .status.stopped { background: #450a0a; color: #f87171; }
+        
+        /* Forms */
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #38bdf8;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #38bdf8; color: #0f172a; }
+        .btn-primary:hover { background: #0ea5e9; }
+        .btn-secondary { background: #334155; color: #e2e8f0; }
+        .btn-secondary:hover { background: #475569; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        
+        /* Results */
+        .result-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .result-score {
+            display: inline-block;
+            background: #1e40af;
+            color: #93c5fd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+        .result-source {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        .result-text {
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            nav { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🧠 KinnyCode Memory</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <nav>
+            <a href="/" class="active">Dashboard</a>
+            <a href="/projects">Proyectos</a>
+            <a href="/search">Búsqueda</a>
+            <a href="/settings">Configuración</a>
+        </nav>
+        
+        <!-- Health Status -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Estado del Servidor</h2>
+                <div id="health-status" class="status running"
+                     hx-get="/api/health"
+                     hx-trigger="load, every 10s"
+                     hx-swap="innerHTML">
+                    Verificando...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-projects">-</div>
+                <div class="stat-label">Proyectos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-documents">-</div>
+                <div class="stat-label">Documentos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-chunks">-</div>
+                <div class="stat-label">Chunks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-uptime">-</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </div>
+        
+        <!-- Quick Search -->
+        <div class="card">
+            <h2>Búsqueda Rápida</h2>
+            <form hx-post="/api/search"
+                  hx-target="#search-results"
+                  hx-swap="innerHTML">
+                <div class="form-group">
+                    <input type="text" name="query" 
+                           placeholder="Buscar en la documentación..."
+                           required>
+                </div>
+                <div class="form-group">
+                    <select name="project_id" id="project-select">
+                        <option value="">Seleccionar proyecto...</option>
+                    </select>
+                </div>
+                <input type="hidden" name="top_k" value="5">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+            
+            <div id="search-results" style="margin-top: 20px;"></div>
+        </div>
+        
+        <!-- Projects List -->
+        <div class="card">
+            <h2>Proyectos Recientes</h2>
+            <div id="projects-list">
+                <div class="loading">Cargando proyectos...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load projects on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/projects')
+                .then(r => r.json())
+                .then(data => {
+                    const projects = data.projects || [];
+                    const select = document.getElementById('project-select');
+                    const list = document.getElementById('projects-list');
+                    
+                    // Populate select
+                    projects.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p;
+                        opt.textContent = p;
+                        select.appendChild(opt);
+                    });
+                    
+                    // Populate list
+                    if (projects.length === 0) {
+                        list.innerHTML = '<p style="color: #94a3b8;">No hay proyectos creados</p>';
+                    } else {
+                        list.innerHTML = projects.map(p => `
+                            <div class="result-card">
+                                <strong>${p}</strong>
+                                <a href="/projects?project=${p}" 
+                                   style="margin-left: 10px; color: #38bdf8;">Ver →</a>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('projects-list').innerHTML = 
+                        '<p style="color: #f87171;">Error cargando proyectos</p>';
+                });
+            
+            // Load health status
+            fetch('/api/health')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('health-status').innerHTML = 
+                        `<span class="status running">● En ejecución (v${data.version})</span>`;
+                })
+                .catch(() => {
+                    document.getElementById('health-status').innerHTML = 
+                        '<span class="status stopped">● Detenido</span>';
+                });
+            
+            // Load metrics
+            fetch('/api/metrics')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('stat-uptime').textContent = 
+                        data.uptime_human || '-';
+                })
+                .catch(() => {});
+        });
+    </script>
+</body>
+</html>

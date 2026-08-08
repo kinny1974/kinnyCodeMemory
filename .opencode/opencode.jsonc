@@ -1,0 +1,226 @@
+{
+  // ═══════════════════════════════════════════════════════════════════
+  //  KinnyCode — Multi-Layer Memory MCP Server Configuration
+  //  
+  //  Provides 10 MCP tools for code indexing, semantic search,
+  //  conversation persistence, architecture decisions, and
+  //  document indexing.
+  // ═══════════════════════════════════════════════════════════════════
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "kinnycode-memory": {
+      "type": "local",
+      "command": [
+        "C:\\\\ProgramData\\\\KinnyCode\\\\memory\\\\.venv\\\\Scripts\\\\python.exe",
+        "C:\\\\ProgramData\\\\KinnyCode\\\\memory\\\\mcp_wrapper.py"
+      ],
+      "description": "KinnyCode Multi-Layer Memory — RAG semántico, persistencia de conversaciones, indexación de documentos.",
+      "environment": {
+        "MEMORY_SERVER_URL": "http://127.0.0.1:8006",
+        "KINNYCODE_PROJECT_ID": "a67d4e5165ff6b92"
+      },
+      "enabled": true
+    }
+  },
+  "provider": {
+    "llama-cpp-cpu": {
+      "name": "Hell-House (CPU Stack)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://192.168.2.111:8002/v1",
+        "apiKey": "kinny-hellhouse-2026"
+      },
+      "models": {
+        "gemma-4-26b-openvino": {
+          "name": "gemma-4-26b-openvino",
+          "contextWindow": 131072,
+          "maxTokens": 4096,
+          "default": true
+        }
+      }
+    },
+    "llama-cpp-gpu": {
+      "name": "Hell-House (GPU Stack)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://192.168.2.111:8001/v1",
+        "apiKey": "kinny-hellhouse-2026"
+      },
+      "models": {
+        "qwen3.6-35b-64k": {
+          "name": "qwen3.6-35b-64k",
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "default": false
+        },
+        "qwen3.6-35b-128k": {
+          "name": "qwen3.6-35b-128k",
+          "contextWindow": 131072,
+          "maxTokens": 4096,
+          "default": true
+        },
+        "gpt-oss-20b-128k": {
+          "name": "gpt-oss-20b-128k",
+          "contextWindow": 131072,
+          "maxTokens": 4096,
+          "default": false
+        }
+      }
+    }
+  },
+  "plugin": [
+    "opencode-working-memory",
+    "context-guard",
+    "dynamic-context-pruning",
+    "opencode-snip",
+    "opencode-review",
+    "envsitter-guard",
+    "opencode-quota"
+  ],
+  "agent": {
+    "scrum-master": {
+      "description": "Scrum Master Tecnico del pipeline Engineering in the Loop (EitL). Gestiona estado del proyecto, coordina agentes via @mentions, y genera el bloque ESTADO ACTUAL DEL PROYECTO en cada interaccion. Es el unico agente que interactua directamente con el usuario.",
+      "mode": "primary",
+      "prompt": "{file:agents/scrum-master.md}",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "ask",
+        "task": {
+          "product-owner": "allow",
+          "architect": "allow",
+          "tdd-engineer": "allow",
+          "validator": "allow",
+          "test-runner": "allow",
+          "qa-engineer": "allow",
+          "performance-engineer": "allow"
+        },
+        "skill": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+        "todowrite": "allow",
+        "todoread": "allow"
+      },
+      "color": "#4CAF50"
+    },
+    "product-owner": {
+      "description": "Product Owner experto que traduce requerimientos del cliente en Product Backlog, Sprints propuestos y Criterios de Aceptacion verificables. Genera el artefacto 01_Plan_Scrum.md.",
+      "mode": "subagent",
+      "prompt": "{file:agents/product-owner.md}",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "deny",
+        "task": "deny",
+        "skill": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+        "todowrite": "allow",
+        "todoread": "allow"
+      },
+      "color": "#2196F3"
+    },
+    "architect": {
+      "description": "Arquitecto de Software Senior que disena arquitecturas antes de cualquier linea de codigo (Forward Engineering estricto). Genera el Software Design Document 02_Arquitectura_SDD.md.",
+      "mode": "subagent",
+      "prompt": "{file:agents/architect.md}",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "deny",
+        "task": "deny",
+        "skill": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+        "todowrite": "allow",
+        "todoread": "allow"
+      },
+      "color": "#9C27B0"
+    },
+    "tdd-engineer": {
+      "description": "Ingeniero de Software especialista en TDD (Test-Driven Development). Define pruebas EJECUTABLES antes de que exista codigo. Mantra: Red -> Green -> Refactor. Genera el artefacto 03_Plan_TDD.md.",
+      "mode": "subagent",
+      "prompt": "{file:agents/tdd-engineer.md}",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "deny",
+        "task": "deny",
+        "skill": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+        "todowrite": "allow",
+        "todoread": "allow"
+      },
+      "color": "#FF9800"
+    },
+    "validator": {
+      "description": "Guardian de Calidad del pipeline EitL. Su palabra es ley: REJECTED = pipeline DETENIDO. Valida artefactos contra metodologias strictas con checklists especificas por tipo.",
+      "mode": "subagent",
+      "prompt": "{file:agents/validator.md}",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "deny",
+        "task": "deny",
+        "skill": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+        "todowrite": "allow",
+        "todoread": "allow"
+      },
+      "color": "#F44336"
+    },
+    "test-runner": {
+      "description": "Ejecutor de tests automatizado del pipeline EitL. Corre suites de pruebas, recolecta resultados, genera reportes de cobertura y bloquea el pipeline si hay regressions. FAIL = pipeline DETENIDO.",
+      "mode": "subagent",
+      "prompt": "{file:agents/test-runner.md}",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "task": "deny",
+        "skill": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+        "todowrite": "allow",
+        "todoread": "allow"
+      },
+      "color": "#00BCD4"
+    },
+    "qa-engineer": {
+      "description": "Ingeniero de Calidad de Codigo del pipeline EitL. Ejecuta linting, type checking, analisis estatico de seguridad (SAST) y genera reportes de calidad. CRITICAL ISSUES = pipeline DETENIDO.",
+      "mode": "subagent",
+      "prompt": "{file:agents/qa-engineer.md}",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "task": "deny",
+        "skill": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+        "todowrite": "allow",
+        "todoread": "allow"
+      },
+      "color": "#795548"
+    },
+    "performance-engineer": {
+      "description": "Ingeniero de Rendimiento del pipeline EitL. Ejecuta benchmarks, load testing y profiling para validar Non-Functional Requirements (NFRs). NFR BREACH = pipeline DETENIDO.",
+      "mode": "subagent",
+      "prompt": "{file:agents/performance-engineer.md}",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "task": "deny",
+        "skill": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+        "todowrite": "allow",
+        "todoread": "allow"
+      },
+      "color": "#E91E63"
+    }
+  }
+}
