@@ -265,8 +265,8 @@
                     // Populate select
                     projects.forEach(p => {
                         const opt = document.createElement('option');
-                        opt.value = p;
-                        opt.textContent = p;
+                        opt.value = p.project_id;
+                        opt.textContent = p.project_id;
                         select.appendChild(opt);
                     });
                     
@@ -276,8 +276,11 @@
                     } else {
                         list.innerHTML = projects.map(p => `
                             <div class="result-card">
-                                <strong>${p}</strong>
-                                <a href="/projects?project=${p}" 
+                                <strong>${p.project_id}</strong>
+                                <span style="margin-left: 10px; color: #94a3b8; font-size: 0.85rem;">
+                                    ${p.documents} documentos
+                                </span>
+                                <a href="/projects?project=${p.project_id}" 
                                    style="margin-left: 10px; color: #38bdf8;">Ver →</a>
                             </div>
                         `).join('');

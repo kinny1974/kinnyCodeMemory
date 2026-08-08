@@ -1060,6 +1060,34 @@ async def list_documents(project_id: str | None = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/list-projects")
+async def list_projects():
+    """List all project IDs with document counts."""
+    try:
+        df = doc_table.to_pandas()
+        if df.empty:
+            return {"projects": []}
+
+        projects = df.groupby("project_id").agg(
+            documents=("source_file", "nunique"),
+            chunks=("id", "count"),
+            total_chars=("document", lambda x: sum(len(s) for s in x)),
+        ).reset_index()
+
+        result = []
+        for _, row in projects.iterrows():
+            result.append({
+                "project_id": row["project_id"],
+                "documents": int(row["documents"]),
+                "chunks": int(row["chunks"]),
+                "total_chars": int(row["total_chars"]),
+            })
+
+        return {"projects": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.delete("/delete-document")
 async def delete_document(source_file: str, project_id: str | None = None):
     """Delete all chunks for a given source file."""

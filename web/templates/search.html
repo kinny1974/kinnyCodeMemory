@@ -214,8 +214,8 @@
                 const select = document.getElementById('search-project');
                 (data.projects || []).forEach(p => {
                     const opt = document.createElement('option');
-                    opt.value = p;
-                    opt.textContent = p;
+                    opt.value = p.project_id;
+                    opt.textContent = p.project_id;
                     select.appendChild(opt);
                 });
             });
