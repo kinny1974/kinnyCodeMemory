@@ -59,6 +59,61 @@ python build.py --all
 # Los ejecutables estarán en dist/
 ```
 
+## 📦 Distribución
+
+### Opción 1: Ejecutables Standalone
+
+```bash
+# Windows
+build.bat
+
+# Linux
+./build.sh
+```
+
+### Opción 2: Release Packages
+
+```bash
+# Crear paquetes de release
+python release.py --all
+
+# Resultado en release/
+# ├── KinnyCodeMemory-Windows-x64-v1.0.0.zip
+# ├── KinnyCodeMemory-Linux-x64-v1.0.0.zip
+# └── KinnyCodeMemory-Source-v1.0.0.tar.gz
+```
+
+### Opción 3: Instalador Auto-Extraíble
+
+```bash
+python create_installer.py
+```
+
+### Opción 4: GitHub Releases
+
+1. Crear tag:
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+2. GitHub Actions creará automáticamente:
+- `KinnyCodeMemory-Windows-x64.zip`
+- `KinnyCodeMemory-Linux-x64.zip`
+- `KinnyCodeMemory-Source.tar.gz`
+
+---
+
+## 🚀 Downloads
+
+| Plataforma | Archivo | Descripción |
+|------------|---------|-------------|
+| 🪟 Windows | [KinnyCodeMemory-Windows-x64.zip](https://github.com/tu-usuario/kinnycodememory/releases/latest) | Ejecutables standalone |
+| 🐧 Linux | [KinnyCodeMemory-Linux-x64.zip](https://github.com/tu-usuario/kinnycodememory/releases/latest) | Ejecutables standalone |
+| 📦 Source | [KinnyCodeMemory-Source.tar.gz](https://github.com/tu-usuario/kinnycodememory/releases/latest) | Código fuente |
+
+---
+
 ## 📖 Uso
 
 ### API REST

@@ -38,7 +38,15 @@ project.properties
 .env
 .env.local
 .env.production
+.env.staging
+.env.development
 *.env
+.env.*
+
+# ── KinnyCode Internal (NO SUBIR) ─────────────────────────────────
+.opencode/
+.kinnycode/
+.kinnycode*/
 
 # ── LanceDB Data ──────────────────────────────────────────────────
 lancedb_memory_db/
@@ -115,3 +123,11 @@ $RECYCLE.BIN/
 kinnycode_memory_db/
 mscore_state.json
 *.state.json
+install_config.json
+
+# ── Test Files (Optional - remove if you want to include) ─────────
+# test/
+
+# ── Documentation Artifacts ───────────────────────────────────────
+eitl-artifacts/
+ESTADO_ACTUAL.md

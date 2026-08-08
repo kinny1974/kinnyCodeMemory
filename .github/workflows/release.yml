@@ -1,0 +1,166 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build executables
+      run: |
+        python build.py --all
+    
+    - name: Create ZIP
+      run: |
+        Compress-Archive -Path dist\* -DestinationPath KinnyCodeMemory-Windows-x64.zip
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-build
+        path: KinnyCodeMemory-Windows-x64.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build executables
+      run: |
+        python3 build.py --all
+    
+    - name: Make executables runnable
+      run: |
+        chmod +x dist/*
+    
+    - name: Create ZIP
+      run: |
+        cd dist && zip -r ../KinnyCodeMemory-Linux-x64.zip *
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-build
+        path: KinnyCodeMemory-Linux-x64.zip
+
+  build-source:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Create source archive
+      run: |
+        tar -czf KinnyCodeMemory-Source.tar.gz \
+          --exclude='.opencode' \
+          --exclude='.kinnycode' \
+          --exclude='.venv' \
+          --exclude='dist' \
+          --exclude='build' \
+          --exclude='*.pyc' \
+          --exclude='__pycache__' \
+          --exclude='.env' \
+          --exclude='lancedb_memory_db' \
+          --exclude='test' \
+          -C .. kinnycodememory
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: source-code
+        path: KinnyCodeMemory-Source.tar.gz
+
+  release:
+    needs: [build-windows, build-linux, build-source]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+    
+    - name: Get version
+      id: version
+      run: |
+        echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: KinnyCode Memory v${{ steps.version.outputs.VERSION }}
+        body: |
+          ## 🧠 KinnyCode Memory v${{ steps.version.outputs.VERSION }}
+          
+          ### 📦 Downloads
+          
+          | Platform | File | Description |
+          |----------|------|-------------|
+          | 🪟 Windows | `KinnyCodeMemory-Windows-x64.zip` | Standalone executables for Windows |
+          | 🐧 Linux | `KinnyCodeMemory-Linux-x64.zip` | Standalone executables for Linux |
+          | 📦 Source | `KinnyCodeMemory-Source.tar.gz` | Source code |
+          
+          ### 🚀 Quick Start
+          
+          **Windows:**
+          ```bash
+          # Extract and run
+          .\KinnyCodeMemory-Server.exe
+          ```
+          
+          **Linux:**
+          ```bash
+          # Extract and run
+          chmod +x KinnyCodeMemory-Server
+          ./KinnyCodeMemory-Server
+          ```
+          
+          **From Source:**
+          ```bash
+          pip install -r requirements.txt
+          python memory_server.py
+          ```
+          
+          ### 📖 Documentation
+          
+          - [README](https://github.com/${{ github.repository }}#readme)
+          - [API Documentation](http://localhost:8007/docs)
+          - [Changelog](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)
+          
+          ### 🐛 Bug Reports
+          
+          Please [open an issue](https://github.com/${{ github.repository }}/issues/new?template=bug_report.md) with details.
+        files: |
+          windows-build/KinnyCodeMemory-Windows-x64.zip
+          linux-build/KinnyCodeMemory-Linux-x64.zip
+          source-code/KinnyCodeMemory-Source.tar.gz
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
