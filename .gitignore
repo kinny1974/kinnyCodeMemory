@@ -125,6 +125,10 @@ mscore_state.json
 *.state.json
 install_config.json
 
+# ── User Projects (NO SUBIR) ─────────────────────────────────────
+Projects/
+projects/
+
 # ── Test Files (Optional - remove if you want to include) ─────────
 # test/
 
