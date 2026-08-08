@@ -96,6 +96,15 @@ class PyInstallerBuilder:
             "--console",
             "--noconfirm",
             "--clean",
+            "--strip",
+            # Exclude heavy unnecessary modules
+            "--exclude-module", "tkinter",
+            "--exclude-module", "matplotlib",
+            "--exclude-module", "scipy",
+            "--exclude-module", "numpy.tests",
+            "--exclude-module", "pandas.tests",
+            "--exclude-module", "torch.distributed",
+            "--exclude-module", "torch.testing",
             # Hidden imports
             "--hidden-import", "uvicorn.logging",
             "--hidden-import", "uvicorn.loops",
