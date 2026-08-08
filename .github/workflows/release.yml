@@ -91,6 +91,7 @@ jobs:
           --exclude='.env' \
           --exclude='lancedb_memory_db' \
           --exclude='test' \
+          --exclude='.git' \
           .
     
     - name: Upload artifact
