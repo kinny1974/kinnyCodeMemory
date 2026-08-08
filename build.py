@@ -103,7 +103,6 @@ class PyInstallerBuilder:
             "--exclude-module", "scipy",
             "--exclude-module", "numpy.tests",
             "--exclude-module", "pandas.tests",
-            "--exclude-module", "torch.distributed",
             "--exclude-module", "torch.testing",
             # Hidden imports
             "--hidden-import", "uvicorn.logging",
