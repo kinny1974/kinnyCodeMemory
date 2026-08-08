@@ -6,7 +6,7 @@
 
 Sistema de memoria multicapa con RAG (Retrieval-Augmented Generation) para asistentes de código AI. Almacena, indexa y recupera contexto de código, documentos y conversaciones.
 
-![KinnyCode Memory](https://via.placeholder.com/800x200/1e293b/38bdf8?text=KinnyCode+Memory+System)
+![KinnyCode Memory](assets/kinnycode-memory-logo.svg)
 
 ## ✨ Características
 
