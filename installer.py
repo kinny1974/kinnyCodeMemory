@@ -158,6 +158,46 @@ WantedBy=multi-user.target
             return False
 
     @staticmethod
+    def install_web_linux(target_dir: str, web_port: int, web_host: str) -> bool:
+        """Install Web UI as systemd service."""
+        try:
+            service_name = "kinnycodeweb"
+            python_exe = os.path.join(target_dir, VENV_DIR, "bin", "python3")
+            web_script = os.path.join(target_dir, "web", "web_app.py")
+
+            service_content = f'''[Unit]
+Description=KinnyCode Web UI
+After=network.target kinnycodememory.service
+
+[Service]
+Type=simple
+User={os.getenv('USER', 'root')}
+WorkingDirectory={target_dir}
+ExecStart={python_exe} {web_script} --port {web_port} --host {web_host}
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+Environment=KINNYCODE_SERVER_URL=http://127.0.0.1:{port}
+
+[Install]
+WantedBy=multi-user.target
+'''
+            service_path = f"/etc/systemd/system/{service_name}.service"
+            with open(service_path, "w") as f:
+                f.write(service_content)
+
+            # Enable and start service
+            subprocess.run(["systemctl", "daemon-reload"], check=True)
+            subprocess.run(["systemctl", "enable", service_name], check=True)
+            subprocess.run(["systemctl", "start", service_name], check=True)
+
+            return True
+
+        except Exception as e:
+            print(f"Error installing Web UI service: {e}")
+            return False
+
+    @staticmethod
     def uninstall_windows() -> bool:
         """Remove Windows service."""
         try:
@@ -184,6 +224,21 @@ WantedBy=multi-user.target
         except Exception:
             return False
 
+    @staticmethod
+    def uninstall_web_linux() -> bool:
+        """Remove Web UI systemd service."""
+        try:
+            service_name = "kinnycodeweb"
+            subprocess.run(["systemctl", "stop", service_name], capture_output=True)
+            subprocess.run(["systemctl", "disable", service_name], capture_output=True)
+            service_path = f"/etc/systemd/system/{service_name}.service"
+            if os.path.exists(service_path):
+                os.remove(service_path)
+            subprocess.run(["systemctl", "daemon-reload"], capture_output=True)
+            return True
+        except Exception:
+            return False
+
 
 # ═══════════════════════════════════════════════════════════════════════
 #  Installer Core
@@ -198,6 +253,9 @@ class KinnyCodeInstaller:
         self.port: int = DEFAULT_PORT
         self.host: str = DEFAULT_HOST
         self.install_service: bool = False
+        self.install_web_service: bool = False
+        self.web_port: int = 19090
+        self.web_host: str = DEFAULT_HOST
         self.install_shortcut: bool = True
         self.progress_callback = None
 
@@ -331,6 +389,9 @@ class KinnyCodeInstaller:
         config_content += f"KINNYCODE_PORT={self.port}\n"
         config_content += f"KINNYCODE_HOST={self.host}\n"
         config_content += f"KINNYCODE_DIR={target_dir}\n"
+        config_content += f"\n# Web UI Configuration\n"
+        config_content += f"KINNYCODE_WEB_PORT={self.web_port}\n"
+        config_content += f"KINNYCODE_WEB_HOST={self.web_host}\n"
 
         config_path.write_text(config_content)
         self._report("Configuración creada", 80)
@@ -434,6 +495,14 @@ Categories=Development;
                 elif PLATFORM == "linux":
                     ServiceManager.install_linux(
                         self.target_dir, self.port, self.host
+                    )
+
+            # Install Web UI service
+            if self.install_web_service:
+                self._report("Instalando servicio Web UI...", 95)
+                if PLATFORM == "linux":
+                    ServiceManager.install_web_linux(
+                        self.target_dir, self.web_port, self.web_host
                     )
 
             self._report("Instalación completada!", 100)
@@ -542,9 +611,25 @@ class InstallerGUI:
         self.service_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(
             tab_options,
-            text="Instalar como servicio del sistema",
+            text="Instalar como servicio del sistema (Memory Server)",
             variable=self.service_var
         ).pack(anchor=tk.W, pady=(0, 10))
+
+        self.web_service_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            tab_options,
+            text="Instalar Web UI como servicio (puerto 19090)",
+            variable=self.web_service_var
+        ).pack(anchor=tk.W, pady=(0, 5))
+
+        # Web UI port config
+        web_frame = ttk.Frame(tab_options)
+        web_frame.pack(fill=tk.X, pady=(0, 10))
+        ttk.Label(web_frame, text="  Puerto Web UI:").pack(side=tk.LEFT)
+        self.web_port_var = tk.StringVar(value="19090")
+        ttk.Entry(
+            web_frame, textvariable=self.web_port_var, width=8
+        ).pack(side=tk.LEFT, padx=(5, 0))
 
         self.shortcut_var = tk.BooleanVar(value=True)
         ttk.Checkbutton(
@@ -556,7 +641,7 @@ class InstallerGUI:
         # Service note
         service_note = ttk.Label(
             tab_options,
-            text="Nota: El servicio se ejecutará automáticamente al iniciar el sistema.",
+            text="Nota: Los servicios se ejecutarán automáticamente al iniciar el sistema.",
             foreground="gray"
         )
         service_note.pack(anchor=tk.W)
@@ -616,6 +701,12 @@ class InstallerGUI:
 
         self.installer.host = self.host_var.get()
         self.installer.install_service = self.service_var.get()
+        self.installer.install_web_service = self.web_service_var.get()
+        try:
+            self.installer.web_port = int(self.web_port_var.get())
+        except ValueError:
+            self.installer.web_port = 19090
+        self.installer.web_host = self.host_var.get()
         self.installer.install_shortcut = self.shortcut_var.get()
 
         # Set progress callback
@@ -627,12 +718,14 @@ class InstallerGUI:
         self.root.config(cursor="")
 
         if success:
-            messagebox.showinfo(
-                "Instalación Completada",
+            msg = (
                 f"{APP_NAME} se instaló correctamente en:\n\n"
                 f"{self.installer.target_dir}\n\n"
-                f"Servidor disponible en: http://{self.installer.host}:{self.installer.port}"
+                f"Memory Server: http://{self.installer.host}:{self.installer.port}"
             )
+            if self.installer.install_web_service:
+                msg += f"\nWeb UI: http://{self.installer.host}:{self.installer.web_port}"
+            messagebox.showinfo("Instalación Completada", msg)
             self.root.destroy()
         else:
             messagebox.showerror(
@@ -642,12 +735,13 @@ class InstallerGUI:
             )
 
     def _uninstall_service(self):
-        """Uninstall system service."""
+        """Uninstall system services."""
         if PLATFORM == "windows":
             ServiceManager.uninstall_windows()
         elif PLATFORM == "linux":
             ServiceManager.uninstall_linux()
-        messagebox.showinfo("Desinstalar", "Servicio desinstalado correctamente")
+            ServiceManager.uninstall_web_linux()
+        messagebox.showinfo("Desinstalar", "Servicios desinstalados correctamente")
 
     def run(self):
         """Start the GUI."""
@@ -688,8 +782,17 @@ class InstallerCLI:
         self.installer.host = "0.0.0.0" if host_choice == "2" else DEFAULT_HOST
 
         # Service installation
-        service = input("\n¿Instalar como servicio del sistema? (s/N): ").strip()
+        service = input("\n¿Instalar Memory Server como servicio del sistema? (s/N): ").strip()
         self.installer.install_service = service.lower() == "s"
+
+        # Web UI service
+        web_service = input("¿Instalar Web UI como servicio? (s/N): ").strip()
+        self.installer.install_web_service = web_service.lower() == "s"
+        if self.installer.install_web_service:
+            web_port_str = input(f"Puerto Web UI [{self.installer.web_port}]: ").strip()
+            if web_port_str:
+                self.installer.web_port = int(web_port_str)
+            print("  Web UI se escuchará en el mismo host que el Memory Server")
 
         # Shortcut
         shortcut = input("¿Crear acceso directo? (S/n): ").strip()
@@ -701,6 +804,9 @@ class InstallerCLI:
         print(f"Puerto:      {self.installer.port}")
         print(f"Host:        {self.installer.host}")
         print(f"Servicio:    {'Sí' if self.installer.install_service else 'No'}")
+        print(f"Web UI:      {'Sí' if self.installer.install_web_service else 'No'}")
+        if self.installer.install_web_service:
+            print(f"  Puerto:    {self.installer.web_port}")
         print(f"Shortcut:    {'Sí' if self.installer.install_shortcut else 'No'}")
         print(f"{'─'*60}")
 
@@ -720,7 +826,9 @@ class InstallerCLI:
         if success:
             print(f"\n{'='*60}")
             print(f"  ¡Instalación completada!")
-            print(f"  Servidor: http://{self.installer.host}:{self.installer.port}")
+            print(f"  Memory Server: http://{self.installer.host}:{self.installer.port}")
+            if self.installer.install_web_service:
+                print(f"  Web UI:        http://{self.installer.host}:{self.installer.web_port}")
             print(f"{'='*60}\n")
         else:
             print("\nError durante la instalación.")
