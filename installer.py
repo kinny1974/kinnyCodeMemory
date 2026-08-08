@@ -198,7 +198,7 @@ class KinnyCodeInstaller:
         self.port: int = DEFAULT_PORT
         self.host: str = DEFAULT_HOST
         self.install_service: bool = False
-        self.create_shortcut: bool = True
+        self.install_shortcut: bool = True
         self.progress_callback = None
 
     def set_progress_callback(self, callback):
@@ -421,7 +421,7 @@ Categories=Development;
             self.create_config(self.target_dir)
 
             # Create shortcut
-            if self.create_shortcut:
+            if self.install_shortcut:
                 self._report("Creando acceso directo...", 85)
                 self.create_shortcut(self.target_dir)
 
@@ -617,7 +617,7 @@ class InstallerGUI:
 
         self.installer.host = self.host_var.get()
         self.installer.install_service = self.service_var.get()
-        self.installer.create_shortcut = self.shortcut_var.get()
+        self.installer.install_shortcut = self.shortcut_var.get()
 
         # Set progress callback
         self.installer.set_progress_callback(self._update_progress)
@@ -694,7 +694,7 @@ class InstallerCLI:
 
         # Shortcut
         shortcut = input("¿Crear acceso directo? (S/n): ").strip()
-        self.installer.create_shortcut = shortcut.lower() != "n"
+        self.installer.install_shortcut = shortcut.lower() != "n"
 
         # Confirm
         print(f"\n{'─'*60}")
@@ -702,7 +702,7 @@ class InstallerCLI:
         print(f"Puerto:      {self.installer.port}")
         print(f"Host:        {self.installer.host}")
         print(f"Servicio:    {'Sí' if self.installer.install_service else 'No'}")
-        print(f"Shortcut:    {'Sí' if self.installer.create_shortcut else 'No'}")
+        print(f"Shortcut:    {'Sí' if self.installer.install_shortcut else 'No'}")
         print(f"{'─'*60}")
 
         confirm = input("\n¿Proceder con la instalación? (S/n): ").strip()

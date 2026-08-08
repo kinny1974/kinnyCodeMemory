@@ -32,6 +32,9 @@ jobs:
     - name: Create ZIP
       run: |
         Compress-Archive -Path dist\* -DestinationPath KinnyCodeMemory-Windows-x64.zip
+        Compress-Archive -Path memory_server.py,mcp_wrapper.py,cli.py,kinnycode_main.py,requirements.txt,.env.example,AGENTS.md -Update -DestinationPath KinnyCodeMemory-Windows-x64.zip
+        if (Test-Path memory) { Compress-Archive -Path memory\* -Update -DestinationPath KinnyCodeMemory-Windows-x64.zip }
+        if (Test-Path assets) { Compress-Archive -Path assets\* -Update -DestinationPath KinnyCodeMemory-Windows-x64.zip }
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -70,6 +73,16 @@ jobs:
     - name: Create ZIP
       run: |
         cd dist && zip -r ../KinnyCodeMemory-Linux-x64.zip *
+        cd .. && zip KinnyCodeMemory-Linux-x64.zip \
+          memory_server.py \
+          mcp_wrapper.py \
+          cli.py \
+          kinnycode_main.py \
+          requirements.txt \
+          .env.example \
+          AGENTS.md
+        if [ -d memory ]; then zip -r KinnyCodeMemory-Linux-x64.zip memory/; fi
+        if [ -d assets ]; then zip -r KinnyCodeMemory-Linux-x64.zip assets/; fi
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
