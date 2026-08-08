@@ -251,7 +251,6 @@ class KinnyCodeInstaller:
             "memory_server.py",
             "mcp_wrapper.py",
             "cli.py",
-            "kinnycode_main.py",
             "memory/",
             "assets/",
             "requirements.txt",
