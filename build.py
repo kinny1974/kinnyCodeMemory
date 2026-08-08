@@ -131,7 +131,7 @@ class PyInstallerBuilder:
 
         if src.exists():
             src.rename(dst)
-            print(f"\n✓ Built: {dst}")
+            print(f"\n[OK] Built: {dst}")
 
     def build_installer(self):
         """Build installer with GUI."""
@@ -168,7 +168,7 @@ class PyInstallerBuilder:
 
         if src.exists():
             src.rename(dst)
-            print(f"\n✓ Built: {dst}")
+            print(f"\n[OK] Built: {dst}")
 
     def build_tray(self):
         """Build system tray application."""
@@ -207,7 +207,7 @@ class PyInstallerBuilder:
 
         if src.exists():
             src.rename(dst)
-            print(f"\n✓ Built: {dst}")
+            print(f"\n[OK] Built: {dst}")
 
     def build_web_ui(self):
         """Build Web UI server."""
@@ -268,7 +268,7 @@ if __name__ == "__main__":
 
         if src.exists():
             src.rename(dst)
-            print(f"\n✓ Built: {dst}")
+            print(f"\n[OK] Built: {dst}")
 
     def _create_runtime_hook(self) -> Path:
         """Create runtime hook for imports."""
@@ -337,7 +337,7 @@ class NSISBuilder:
 
         if result.returncode == 0:
             installer_path = DIST_DIR / f"{APP_NAME}-Setup-v{APP_VERSION}.exe"
-            print(f"\n✓ Installer created: {installer_path}")
+            print(f"\n[OK] Installer created: {installer_path}")
         else:
             print(f"Error: {result.stderr}")
 
