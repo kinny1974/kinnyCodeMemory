@@ -13,6 +13,9 @@ Run with: uvicorn memory_server:app --host 127.0.0.1 --port 8006
 """
 from __future__ import annotations
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import hashlib
 import json
 import sys
