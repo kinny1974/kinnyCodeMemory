@@ -1661,4 +1661,5 @@ async def preload_embedding_model():
 # ═══════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8007)
+    host = os.environ.get("KINNYCODE_HOST", "127.0.0.1")
+    uvicorn.run(app, host=host, port=8007)
