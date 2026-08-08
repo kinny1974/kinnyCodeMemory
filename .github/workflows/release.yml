@@ -80,19 +80,7 @@ jobs:
     
     - name: Create source archive
       run: |
-        tar -czf KinnyCodeMemory-Source.tar.gz \
-          --exclude='.opencode' \
-          --exclude='.kinnycode' \
-          --exclude='.venv' \
-          --exclude='dist' \
-          --exclude='build' \
-          --exclude='*.pyc' \
-          --exclude='__pycache__' \
-          --exclude='.env' \
-          --exclude='lancedb_memory_db' \
-          --exclude='test' \
-          --exclude='.git' \
-          .
+        git archive --format=tar.gz --prefix=kinnyCodeMemory/ -o KinnyCodeMemory-Source.tar.gz HEAD
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
