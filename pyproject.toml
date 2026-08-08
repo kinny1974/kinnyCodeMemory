@@ -1,0 +1,40 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--disable-warnings",
+    "-x"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "benchmark: marks tests as performance benchmarks"
+]
+
+[tool.coverage.run]
+source = ["memory", "memory_server.py", "mcp_wrapper.py", "cli.py", "installer.py"]
+omit = [
+    "tests/*",
+    ".venv/*",
+    "web/*",
+    "build.py",
+    "release.py",
+    "create_installer.py"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.",
+    "raise NotImplementedError",
+    "pass",
+    "except ImportError",
+    "except Exception"
+]
+show_missing = true
+skip_covered = true
