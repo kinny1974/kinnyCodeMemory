@@ -765,9 +765,19 @@ class InstallerCLI:
         print(f"  {APP_NAME} — Instalador CLI v{APP_VERSION}")
         print(f"{'='*60}\n")
 
+        # Menu
+        print("Opciones:")
+        print("  1) Instalar")
+        print("  2) Desinstalar servicios")
+        choice = input("Selección [1]: ").strip()
+
+        if choice == "2":
+            self._uninstall()
+            return
+
         # Get target directory
         default_dir = str(Path.home() / "KinnyCodeMemory")
-        target = input(f"Carpeta de destino [{default_dir}]: ").strip()
+        target = input(f"\nCarpeta de destino [{default_dir}]: ").strip()
         self.installer.target_dir = target or default_dir
 
         # Get port
@@ -833,6 +843,27 @@ class InstallerCLI:
         else:
             print("\nError durante la instalación.")
 
+    def _uninstall(self):
+        """Uninstall system services."""
+        print(f"\n{'─'*60}")
+        confirm = input("¿Eliminar servicios del sistema? (s/N): ").strip()
+        if confirm.lower() != "s":
+            print("Desinstalación cancelada.")
+            return
+
+        print("\nDeteniendo servicios...")
+        if PLATFORM == "linux":
+            ServiceManager.uninstall_linux()
+            ServiceManager.uninstall_web_linux()
+            print("  ✓ Servicios systemd eliminados")
+        elif PLATFORM == "windows":
+            ServiceManager.uninstall_windows()
+            print("  ✓ Servicio Windows eliminado")
+
+        print("\nDesinstalación completada.")
+        print("Los archivos no fueron eliminados.")
+        print(f"Para eliminarlos: rm -rf {self.installer.target_dir or '/opt/KinnyCodeMemory'}")
+
 
 # ═══════════════════════════════════════════════════════════════════════
 #  Main
@@ -841,12 +872,39 @@ class InstallerCLI:
 
 def main():
     """Entry point."""
-    if "--cli" in sys.argv or not HAS_TKINTER:
+    if "--uninstall" in sys.argv:
+        _uninstall_interactive()
+    elif "--cli" in sys.argv or not HAS_TKINTER:
         installer = InstallerCLI()
         installer.run()
     else:
         app = InstallerGUI()
         app.run()
+
+
+def _uninstall_interactive():
+    """Interactive uninstall from CLI."""
+    print(f"\n{'='*60}")
+    print(f"  {APP_NAME} — Desinstalador")
+    print(f"{'='*60}\n")
+
+    confirm = input("¿Eliminar servicios del sistema y archivos? (s/N): ").strip()
+    if confirm.lower() != "s":
+        print("Desinstalación cancelada.")
+        return
+
+    print("\nDeteniendo servicios...")
+    if PLATFORM == "linux":
+        ServiceManager.uninstall_linux()
+        ServiceManager.uninstall_web_linux()
+        print("  Servicios systemd eliminados.")
+    elif PLATFORM == "windows":
+        ServiceManager.uninstall_windows()
+        print("  Servicio Windows eliminado.")
+
+    print("\nDesinstalación completada.")
+    print("Los archivos en /opt/KinnyCodeMemory no fueron eliminados.")
+    print("Para eliminarlos: sudo rm -rf /opt/KinnyCodeMemory")
 
 
 if __name__ == "__main__":
