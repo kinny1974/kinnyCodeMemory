@@ -35,7 +35,7 @@ jobs:
         Compress-Archive -Path memory_server.py,mcp_wrapper.py,cli.py,requirements.txt,.env.example,AGENTS.md -Update -DestinationPath KinnyCodeMemory-Windows-x64.zip
         if (Test-Path memory) { Compress-Archive -Path memory\* -Update -DestinationPath KinnyCodeMemory-Windows-x64.zip }
         if (Test-Path assets) { Compress-Archive -Path assets\* -Update -DestinationPath KinnyCodeMemory-Windows-x64.zip }
-        if (Test-Path web) { Compress-Archive -Path web\* -Recurse -Update -DestinationPath KinnyCodeMemory-Windows-x64.zip }
+        if (Test-Path web) { Get-ChildItem -Path web -Recurse -File | Compress-Archive -DestinationPath KinnyCodeMemory-Windows-x64.zip -Update }
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
