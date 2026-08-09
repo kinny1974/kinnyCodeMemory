@@ -135,3 +135,7 @@ projects/
 # ── Documentation Artifacts ───────────────────────────────────────
 eitl-artifacts/
 ESTADO_ACTUAL.md
+
+# ── Plugin TypeScript ─────────────────────────────────────────────
+plugin-kinnycode/node_modules/
+plugin-kinnycode/dist/
